@@ -130,6 +130,8 @@ public final class TreeUtils {
   private static @MonotonicNonNull Method switchExpressionGetCases = null;
   /** The {@code YieldTree.getValue()} method. Null on JDK 11 and lower. */
   private static @MonotonicNonNull Method yieldGetValue = null;
+  /** The {@code JCTree.JCVariableDecl.declaredUsingVar()} method. Null on JDK 9 and lower. */
+  private static @MonotonicNonNull Method isDeclaredUsingVar = null;
 
   /** Tree kinds that represent a binary comparison. */
   private static final Set<Tree.Kind> BINARY_COMPARISON_TREE_KINDS =
@@ -171,6 +173,7 @@ public final class TreeUtils {
         switchExpressionGetCases = switchExpressionClass.getMethod("getCases");
         Class<?> yieldTreeClass = Class.forName("com.sun.source.tree.YieldTree");
         yieldGetValue = yieldTreeClass.getMethod("getValue");
+        isDeclaredUsingVar = JCTree.JCVariableDecl.class.getDeclaredMethod("declaredUsingVar");
       } catch (ClassNotFoundException | NoSuchMethodException e) {
         throw new BugInCF("JDK 12+ reflection problem", e);
       }
@@ -2275,6 +2278,26 @@ public final class TreeUtils {
     } catch (InvocationTargetException | IllegalAccessException e) {
       throw new BugInCF(
           "TreeUtils.yieldTreeGetValue: reflection failed for tree: %s", yieldTree, e);
+    }
+  }
+
+  /**
+   * Returns if the {@code variableTree} is declared using var.
+   *
+   * @param variableTree the variable tree
+   * @return true if declared using var
+   */
+  public static boolean isVariableTreeDeclaredUsingVar(JCTree.JCVariableDecl variableTree) {
+    if (SystemUtil.jreVersion < 10) {
+      throw new BugInCF("Don't call JCTree.JCVariableDecl.declaredUsingVar on JDK < 10");
+    }
+    try {
+      boolean isVar = (boolean) isDeclaredUsingVar.invoke(variableTree);
+      return isVar;
+    } catch (InvocationTargetException | IllegalAccessException e) {
+      throw new BugInCF(
+          "TreeUtils.isVariableTreeDeclaredUsingVar: reflection failed for tree: %s",
+          variableTree, e);
     }
   }
 

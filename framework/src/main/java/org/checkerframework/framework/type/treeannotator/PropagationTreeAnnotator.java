@@ -1,17 +1,9 @@
 package org.checkerframework.framework.type.treeannotator;
 
-import com.sun.source.tree.AssignmentTree;
-import com.sun.source.tree.BinaryTree;
-import com.sun.source.tree.CompoundAssignmentTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.MethodInvocationTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.NewArrayTree;
-import com.sun.source.tree.Tree;
+import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
-import com.sun.source.tree.TypeCastTree;
-import com.sun.source.tree.UnaryTree;
 import com.sun.source.util.TreePath;
+import com.sun.tools.javac.tree.JCTree;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
@@ -21,11 +13,7 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedArrayType;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedExecutableType;
 import org.checkerframework.framework.type.QualifierHierarchy;
-import org.checkerframework.javacutil.AnnotationMirrorSet;
-import org.checkerframework.javacutil.CollectionUtils;
-import org.checkerframework.javacutil.Pair;
-import org.checkerframework.javacutil.TreePathUtil;
-import org.checkerframework.javacutil.TypeKindUtils;
+import org.checkerframework.javacutil.*;
 
 /**
  * {@link PropagationTreeAnnotator} adds qualifiers to types where the resulting type is a function
@@ -287,6 +275,16 @@ public class PropagationTreeAnnotator extends TreeAnnotator {
     }
 
     return null;
+  }
+
+  @Override
+  public Void visitVariable(VariableTree node, AnnotatedTypeMirror annotatedTypeMirror) {
+    // decide if the node is declared using var
+    boolean isVar = TreeUtils.isVariableTreeDeclaredUsingVar((JCTree.JCVariableDecl) node);
+    if (isVar) {
+      System.out.println("isVar");
+    }
+    return super.visitVariable(node, annotatedTypeMirror);
   }
 
   private boolean hasPrimaryAnnotationInAllHierarchies(AnnotatedTypeMirror type) {

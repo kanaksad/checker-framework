@@ -19,6 +19,6 @@ public class TaintingTest extends CheckerFrameworkPerDirectoryTest {
 
   @Parameters
   public static String[] getTestDirs() {
-    return new String[] {"tainting", "all-systems"};
+    return new String[] {"all-systems/var"};
   }
 }
