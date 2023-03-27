@@ -173,9 +173,15 @@ public final class TreeUtils {
         switchExpressionGetCases = switchExpressionClass.getMethod("getCases");
         Class<?> yieldTreeClass = Class.forName("com.sun.source.tree.YieldTree");
         yieldGetValue = yieldTreeClass.getMethod("getValue");
-        isDeclaredUsingVar = JCTree.JCVariableDecl.class.getDeclaredMethod("declaredUsingVar");
       } catch (ClassNotFoundException | NoSuchMethodException e) {
         throw new BugInCF("JDK 12+ reflection problem", e);
+      }
+    }
+    if (SystemUtil.jreVersion >= 10) {
+      try {
+        isDeclaredUsingVar = JCTree.JCVariableDecl.class.getDeclaredMethod("declaredUsingVar");
+      } catch (NoSuchMethodException e) {
+        throw new BugInCF("JDK 10+ reflection problem", e);
       }
     }
   }
