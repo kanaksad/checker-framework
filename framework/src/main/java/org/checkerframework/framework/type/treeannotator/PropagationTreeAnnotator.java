@@ -4,6 +4,7 @@ import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.tree.JCTree;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
@@ -282,9 +283,24 @@ public class PropagationTreeAnnotator extends TreeAnnotator {
     // decide if the node is declared using var
     boolean isVar = TreeUtils.isVariableTreeDeclaredUsingVar((JCTree.JCVariableDecl) node);
     if (isVar) {
-      System.out.println("isVar");
+      ExpressionTree initTree = node.getInitializer();
+      if (initTree != null) {
+        AnnotatedTypeMirror a = atypeFactory.getAnnotatedType(initTree);
+        annotatedTypeMirror.replaceAnnotation(a.getAnnotation());
+        if (a instanceof AnnotatedTypeMirror.AnnotatedDeclaredType) {
+          List<AnnotatedTypeMirror> typeArgs =
+              ((AnnotatedTypeMirror.AnnotatedDeclaredType) a).getTypeArguments();
+          List<AnnotatedTypeMirror> typeArgsOrg =
+              ((AnnotatedTypeMirror.AnnotatedDeclaredType) annotatedTypeMirror).getTypeArguments();
+          for (int i = 0; i < typeArgs.size(); i++) {
+            typeArgsOrg.get(i).replaceAnnotation(typeArgs.get(i).getAnnotation());
+          }
+          ((AnnotatedTypeMirror.AnnotatedDeclaredType) annotatedTypeMirror)
+              .setTypeArguments(typeArgs);
+        }
+      }
     }
-    return super.visitVariable(node, annotatedTypeMirror);
+    return null;
   }
 
   private boolean hasPrimaryAnnotationInAllHierarchies(AnnotatedTypeMirror type) {
