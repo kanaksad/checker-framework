@@ -286,14 +286,14 @@ public class PropagationTreeAnnotator extends TreeAnnotator {
       ExpressionTree initTree = node.getInitializer();
       if (initTree != null) {
         AnnotatedTypeMirror a = atypeFactory.getAnnotatedType(initTree);
-        annotatedTypeMirror.replaceAnnotation(a.getAnnotation());
+        annotatedTypeMirror.replaceAnnotations(a.getAnnotations());
         if (a instanceof AnnotatedTypeMirror.AnnotatedDeclaredType) {
           List<AnnotatedTypeMirror> typeArgs =
               ((AnnotatedTypeMirror.AnnotatedDeclaredType) a).getTypeArguments();
           List<AnnotatedTypeMirror> typeArgsOrg =
               ((AnnotatedTypeMirror.AnnotatedDeclaredType) annotatedTypeMirror).getTypeArguments();
           for (int i = 0; i < typeArgs.size(); i++) {
-            typeArgsOrg.get(i).replaceAnnotation(typeArgs.get(i).getAnnotation());
+            typeArgsOrg.get(i).replaceAnnotations(typeArgs.get(i).getAnnotations());
           }
           ((AnnotatedTypeMirror.AnnotatedDeclaredType) annotatedTypeMirror)
               .setTypeArguments(typeArgs);
