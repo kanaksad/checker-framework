@@ -2396,7 +2396,7 @@ public final class TreeUtils {
    * Returns true if the {@code variableTree} is declared using var.
    *
    * @param variableTree the variableTree to check
-   * @true if the variableTree is declared using var
+   * @return true if the variableTree is declared using var
    */
   public static boolean isVariableTreeDeclaredUsingVar(JCTree.JCVariableDecl variableTree) {
     if (SystemUtil.jreVersion < 10) {
